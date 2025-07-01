@@ -5,7 +5,6 @@ const axios = require("axios");
 
 const app = express();
 const port = 3000;
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -20,7 +19,7 @@ app.get("/", (req, res) => {
 //Submit form data to the backend
 app.post("/submit", async (req, res) => {
   try {
-    const response = await axios.post(`${BACKEND_URL}/submit`, req.body);
+    const response = await axios.post("http://localhost:8000/submit", req.body);
     if (response.data.status === "success") {
       res.render("success", { message: "Data submitted successfully!" });
     } else {
@@ -34,7 +33,7 @@ app.post("/submit", async (req, res) => {
 // Fetch data from the backend API
 app.get("/api", async (req, res) => {
   try {
-    const response = await axios.get(`${BACKEND_URL}/api`);
+    const response = await axios.get("http://localhost:8000/api");
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
