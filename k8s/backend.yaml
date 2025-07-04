@@ -19,7 +19,7 @@ spec:
         - containerPort: 8000
         env:
         - name: MONGO_URI
-          value: "mongodb+srv://starmukku27:starmukku27@cluster0.snuhpmt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+          value: "MONGO URL need to add here"
 ---
 apiVersion: v1
 kind: Service
