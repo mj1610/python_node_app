@@ -3,3 +3,9 @@ __pycache__/
 *.pyc
 .vscode/
 .env
+terraform.tfvars
+*.pem
+*.tfstate
+*.tfstate.backup
+crash.log
+.terraform/
