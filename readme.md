@@ -3,4 +3,4 @@ FrontEnd with Node + Express
 DockerFile
 Docker-Compose file
 Kubernetes deployment and service file
-Terraform files added
+Terraform files added for creating EC2 instance
