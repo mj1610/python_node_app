@@ -28,7 +28,7 @@ def index():
 @app.route("/submit", methods=["POST"])
 def submit_form():
     try:
-        data = request.json
+        data = request.form.to_dict()
         collection.insert_one(data)
         return jsonify({"status": "success"}), 200
     except Exception as e:

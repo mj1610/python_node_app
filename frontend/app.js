@@ -2,7 +2,8 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const axios = require("axios");
-
+const dotenv = require("dotenv");
+dotenv.config();
 const app = express();
 const port = 3000;
 
@@ -14,6 +15,7 @@ const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
