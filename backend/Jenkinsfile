@@ -1,46 +1,43 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    MONGO_URI = credentials('mongo-uri')   // Jenkins credentials ID
-  }
-
-  stages {
-    stage('Checkout Code') {
-      steps {
-        dir('backend') {
-          git url: 'https://github.com/mj1610/python_node_app.git', branch: 'main'
-        }
-      }
+    environment {
+        VENV_DIR = "venv"
+        MONGO_URI = credentials('mongo-uri')
     }
 
-    stage('Install Dependencies') {
-      steps {
-        dir('backend') {
-          sh '''
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install --upgrade pip --break-system-packages
-            pip install -r requirements.txt --break-system-packages
-          '''
+    stages {
+        stage('Inject Environment Variables') {
+            steps {
+                dir('backend') {
+                    writeFile file: '.env', text: "MONGO_URI=${MONGO_URI}"
+                }
+            }
         }
-      }
-    }
 
-    stage('Inject Environment Variables') {
-      steps {
-        dir('backend') {
-          writeFile file: '.env', text: "MONGO_URI=${MONGO_URI}"
+        stage('Install Dependencies') {
+            steps {
+                dir('backend') {
+                    sh '''
+                        python3 -m venv ${VENV_DIR}
+                        ./venv/bin/pip install --upgrade pip
+                        ./venv/bin/pip install -r requirements.txt
+                    '''
+                }
+            }
         }
-      }
-    }
 
-    stage('Restart Flask App') {
-      steps {
-        dir('backend') {
-          sh 'pm2 restart flask-app || pm2 start python3 app.py --name flask-app'
+        stage('Run Flask App with PM2') {
+            steps {
+                dir('backend') {
+                    sh '''
+                        pm2 delete flask-app || true
+                        ./venv/bin/python -m flask --app app run &
+                        pm2 start ./venv/bin/python --name flask-app -- app.py
+                        pm2 save
+                    '''
+                }
+            }
         }
-      }
     }
-  }
 }
