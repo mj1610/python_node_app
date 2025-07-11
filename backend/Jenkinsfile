@@ -1,0 +1,46 @@
+pipeline {
+  agent any
+
+  environment {
+    MONGO_URI = credentials('mongo-uri')   // Jenkins credentials ID
+  }
+
+  stages {
+    stage('Checkout Code') {
+      steps {
+        dir('backend') {
+          git url: 'https://github.com/mj1610/python_node_app.git', branch: 'main'
+        }
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        dir('backend') {
+          sh '''
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+          '''
+        }
+      }
+    }
+
+    stage('Inject Environment Variables') {
+      steps {
+        dir('backend') {
+          writeFile file: '.env', text: "MONGO_URI=${MONGO_URI}"
+        }
+      }
+    }
+
+    stage('Restart Flask App') {
+      steps {
+        dir('backend') {
+          sh 'pm2 restart flask-app || pm2 start python3 app.py --name flask-app'
+        }
+      }
+    }
+  }
+}
